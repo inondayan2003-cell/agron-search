@@ -72,12 +72,15 @@
         const id = document.getElementById('idInput').value;
         const fn = document.getElementById('fnInput').value;
         const ln = document.getElementById('lnInput').value;
+        // במקום השורה הישנה, השתמש בזה כדי למצוא את שם הטבלה אוטומטית:
+const tableRes = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' LIMIT 1");
+const tableName = tableRes[0] ? tableRes[0].values[0][0] : "people";
 
-        let query = "SELECT * FROM people WHERE 1=1";
-        if (id) query += ` AND זהות = '${id}'`;
-        if (fn) query += ` AND פרטי LIKE '${fn}%'`;
-        if (ln) query += ` AND משפחה LIKE '${ln}%'`;
-        query += " LIMIT 50";
+let query = `SELECT * FROM "${tableName}" WHERE 1=1`;
+if (id) query += ` AND זהות = '${id}'`;
+if (fn) query += ` AND פרטי LIKE '${fn}%'`;
+if (ln) query += ` AND משפחה LIKE '${ln}%'`;
+query += " LIMIT 50";
 
         try {
             const res = db.exec(query);
