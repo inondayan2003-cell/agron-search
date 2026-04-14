@@ -2,43 +2,194 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>חיפוש אגרון מתקדם</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>מערכת אגרון - Dark Edition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
     <style>
-        :root { --primary: #007aff; --bg: #f2f2f7; }
-        body { font-family: -apple-system, system-ui; background: var(--bg); margin: 0; padding: 15px; color: #1c1c1e; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .header-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #d1d1d6; border-radius: 10px; font-size: 16px; outline: none; }
-        input:focus { border-color: var(--primary); }
-        button { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 17px; font-weight: 600; margin-top: 10px; }
-        .person-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
-        .person-card::before { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 5px; background: var(--primary); }
-        .name { font-size: 20px; font-weight: bold; color: #000; display: block; margin-bottom: 5px; }
-        .info { font-size: 14px; color: #8e8e93; line-height: 1.6; }
-        .age-tag { background: #e5e5ea; padding: 3px 8px; border-radius: 5px; font-weight: 600; color: #3a3a3c; }
-        .family-section { margin-top: 15px; border-top: 1px solid #f2f2f7; padding-top: 10px; }
-        .family-toggle { background: #f2f2f7; border: none; width: 100%; padding: 10px; border-radius: 8px; font-size: 14px; color: var(--primary); font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
-        .family-list { display: none; padding: 10px 5px; font-size: 14px; color: #3a3a3c; }
-        .status { text-align: center; font-size: 12px; color: #8e8e93; margin-top: 10px; }
-        .relation-group { margin-bottom: 8px; }
-        .relation-label { font-weight: bold; color: #007aff; min-width: 50px; display: inline-block; }
+        :root {
+            --bg-color: #0b0e14;
+            --card-bg: #151921;
+            --input-bg: #1c222d;
+            --text-main: #e1e1e1;
+            --text-dim: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --border: #2d3748;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--accent);
+        }
+
+        .search-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+        }
+
+        .file-label {
+            display: block;
+            text-align: center;
+            padding: 10px;
+            background: #1e293b;
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            padding: 18px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .result-info {
+            font-size: 14px;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .age-pill {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .family-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .family-list {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--bg-color);
+            border-radius: 8px;
+            font-size: 13px;
+            border-left: 2px solid var(--accent);
+        }
+
+        #status {
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 15px;
+            color: var(--text-dim);
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header-card">
-        <h2 style="margin-top:0">חיפוש תושבים</h2>
-        <input type="file" id="dbFile" accept=".db" style="display: none;" onchange="loadDatabase(this)">
-        <button id="loadBtn" onclick="document.getElementById('dbFile').click()" style="background: #34c759; margin-bottom: 20px;">טען קובץ agron.db</button>
+    <div class="header">
+        <h1>AGRON SYSTEM</h1>
+    </div>
+
+    <div class="search-card">
+        <label class="file-label" id="fileLabel">
+            📁 לחץ לטעינת קובץ המאגר (agron.db)
+            <input type="file" id="dbFile" accept=".db" style="display:none" onchange="loadDB(this)">
+        </label>
+        <div id="status">ממתין לטעינת נתונים...</div>
+
+        <div class="input-group"><input type="text" id="inID" placeholder="מספר זהות"></div>
+        <div class="input-group"><input type="text" id="inFN" placeholder="שם פרטי"></div>
+        <div class="input-group"><input type="text" id="inLN" placeholder="שם משפחה"></div>
+        <div class="input-group"><input type="text" id="inCity" placeholder="עיר"></div>
         
-        <input type="text" id="idInput" placeholder="תעודת זהות">
-        <input type="text" id="fnInput" placeholder="שם פרטי">
-        <input type="text" id="lnInput" placeholder="שם משפחה">
-        <button onclick="search()">חפש עכשיו</button>
-        <div id="dbStatus" class="status">ממתין לטעינת מסד נתונים...</div>
+        <button onclick="doSearch()">חפש עכשיו</button>
     </div>
 
     <div id="results"></div>
@@ -46,121 +197,84 @@
 
 <script>
     let db = null;
-    const currentYear = new Date().getFullYear();
 
-    async function loadDatabase(input) {
-        const status = document.getElementById('dbStatus');
-        status.innerText = "טוען... נא לא לסגור";
+    async function loadDB(input) {
+        if (!input.files[0]) return;
+        const status = document.getElementById('status');
+        const label = document.getElementById('fileLabel');
+        status.innerText = "טוען... נא להמתין";
         
         try {
-            const SQL = await initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}` });
-            const file = input.files[0];
-            const arrayBuffer = await file.arrayBuffer();
-            db = new SQL.Database(new Uint8Array(arrayBuffer));
-            status.innerText = "המאגר מוכן לשימוש!";
-            document.getElementById('loadBtn').style.display = 'none';
+            const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${f}` });
+            const reader = new FileReader();
+            reader.onload = function() {
+                db = new SQL.Database(new Uint8Array(reader.result));
+                status.innerText = "✅ המאגר נטען בהצלחה";
+                label.style.borderColor = "var(--accent)";
+                label.innerText = "✅ קובץ טעון: " + input.files[0].name;
+            };
+            reader.readAsArrayBuffer(input.files[0]);
         } catch (e) {
-            status.innerText = "שגיאה בטעינה: " + e.message;
+            status.innerText = "שגיאה: " + e.message;
         }
     }
 
-    function search() {
-        if (!db) return alert("קודם טען את קובץ ה-agron.db");
-        const resultsDiv = document.getElementById('results');
-        resultsDiv.innerHTML = "מחפש...";
+    function doSearch() {
+        if (!db) { alert("אנא טען את קובץ ה-db תחילה"); return; }
+        const resDiv = document.getElementById('results');
+        resDiv.innerHTML = "";
 
-        const id = document.getElementById('idInput').value;
-        const fn = document.getElementById('fnInput').value;
-        const ln = document.getElementById('lnInput').value;
-        // במקום השורה הישנה, השתמש בזה כדי למצוא את שם הטבלה אוטומטית:
-const tableRes = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' LIMIT 1");
-const tableName = tableRes[0] ? tableRes[0].values[0][0] : "people";
+        const id = document.getElementById('inID').value;
+        const fn = document.getElementById('inFN').value;
+        const ln = document.getElementById('inLN').value;
+        const city = document.getElementById('inCity').value;
 
-let query = `SELECT * FROM "${tableName}" WHERE 1=1`;
-if (id) query += ` AND זהות = '${id}'`;
-if (fn) query += ` AND פרטי LIKE '${fn}%'`;
-if (ln) query += ` AND משפחה LIKE '${ln}%'`;
-query += " LIMIT 50";
+        let q = "SELECT * FROM people WHERE 1=1";
+        if(id) q += ` AND זהות = '${id}'`;
+        if(fn) q += ` AND פרטי LIKE '${fn}%'`;
+        if(ln) q += ` AND משפחה LIKE '${ln}%'`;
+        if(city) q += ` AND עיר LIKE '${city}%'`;
+        q += " LIMIT 50";
 
-        try {
-            const res = db.exec(query);
-            if (res.length === 0) {
-                resultsDiv.innerHTML = "לא נמצאו תוצאות";
-                return;
-            }
-            renderResults(res[0]);
-        } catch (e) {
-            resultsDiv.innerHTML = "שגיאה בחיפוש: " + e.message;
-        }
-    }
+        const res = db.exec(q);
+        if(!res[0]) { resDiv.innerHTML = "<p style='text-align:center'>לא נמצאו תוצאות</p>"; return; }
 
-    function renderResults(data) {
-        const resultsDiv = document.getElementById('results');
-        resultsDiv.innerHTML = "";
-
-        data.values.forEach(row => {
-            const person = {};
-            data.columns.forEach((col, i) => person[col] = row[i]);
-            
-            const birthYear = parseInt(person.שנה) || 0;
-            const age = birthYear > 0 ? (currentYear - birthYear) : "לא ידוע";
+        res[0].values.forEach(row => {
+            let p = {};
+            res[0].columns.forEach((c, i) => p[c] = row[i]);
+            const age = 2026 - (parseInt(p.שנה) || 0);
 
             const card = document.createElement('div');
-            card.className = 'person-card';
+            card.className = 'result-card';
             card.innerHTML = `
-                <span class="name">${person.פרטי} ${person.משפחה}</span>
-                <div class="info">
-                    <strong>ת.ז:</strong> ${person.זהות} | 
-                    <strong>שנת לידה:</strong> ${person.שנה} <span class="age-tag">בן/בת ${age}</span><br>
-                    <strong>כתובת:</strong> ${person.עיר}, ${person.רחוב} ${person.בית}
+                <div class="result-name">${p.פרטי} ${p.משפחה}</div>
+                <div class="result-info">
+                    <b>ת.ז:</b> ${p.זהות} | <b>עיר:</b> ${p.עיר}<br>
+                    <b>נולד ב:</b> ${p.שנה} <span class="age-pill">בן/בת ${age}</span>
                 </div>
-                <div class="family-section">
-                    <button class="family-toggle" onclick="showFamily('${person.זהות}', '${person.מז_אב}', '${person.מז_אם}', this)">
-                        בני משפחה <span>▼</span>
-                    </button>
-                    <div class="family-list" id="fam-${person.זהות}"></div>
-                </div>
+                <button class="family-btn" onclick="getFamily('${p.זהות}', '${p.מז_אב}', '${p.מז_אם}', this)">בני משפחה ▼</button>
+                <div class="family-list" id="fam-${p.זהות}"></div>
             `;
-            resultsDiv.appendChild(card);
+            resDiv.appendChild(card);
         });
     }
 
-    function showFamily(myId, fatherId, motherId, btn) {
-        const list = document.getElementById(`fam-${myId}`);
-        if (list.style.display === "block") {
-            list.style.display = "none";
-            btn.querySelector('span').innerText = "▼";
-            return;
-        }
+    function getFamily(myId, dad, mom, btn) {
+        const box = document.getElementById(`fam-${myId}`);
+        if(box.style.display === "block") { box.style.display = "none"; return; }
 
         let html = "";
+        const p = db.exec(`SELECT פרטי, משפחה FROM people WHERE זהות='${dad}' OR זהות='${mom}'`);
+        if(p[0]) html += "<b>👨‍👩‍👦 הורים:</b> " + p[0].values.map(v => v[0]+' '+v[1]).join(", ") + "<br>";
         
-        // 1. הורים
-        const parents = db.exec(`SELECT פרטי, משפחה, 'הורה' as rel FROM people WHERE זהות = '${fatherId}' OR זהות = '${motherId}'`);
-        if (parents.length > 0) {
-            html += `<div class="relation-group"><span class="relation-label">הורים:</span> ` + 
-                    parents[0].values.map(p => `${p[0]} ${p[1]}`).join(", ") + `</div>`;
-        }
+        const c = db.exec(`SELECT פרטי, משפחה FROM people WHERE מז_אב='${myId}' OR מז_אם='${myId}'`);
+        if(c[0]) html += "<b>👶 ילדים:</b> " + c[0].values.map(v => v[0]+' '+v[1]).join(", ") + "<br>";
 
-        // 2. ילדים
-        const children = db.exec(`SELECT פרטי, משפחה FROM people WHERE מז_אב = '${myId}' OR מז_אם = '${myId}'`);
-        if (children.length > 0) {
-            html += `<div class="relation-group"><span class="relation-label">ילדים:</span> ` + 
-                    children[0].values.map(p => `${p[0]} ${p[1]}`).join(", ") + `</div>`;
-        }
+        const s = db.exec(`SELECT פרטי FROM people WHERE מז_אב='${dad}' AND זהות!='${myId}' AND מז_אב!='' LIMIT 5`);
+        if(s[0]) html += "<b>👫 אחים:</b> " + s[0].values.map(v => v[0]).join(", ");
 
-        // 3. אחים (מי שיש לו אותם הורים)
-        if (fatherId || motherId) {
-            const siblings = db.exec(`SELECT פרטי FROM people WHERE (מז_אב = '${fatherId}' AND מז_אב != '') AND זהות != '${myId}' LIMIT 10`);
-            if (siblings.length > 0) {
-                html += `<div class="relation-group"><span class="relation-label">אחים:</span> ` + 
-                        siblings[0].values.map(p => p[0]).join(", ") + `</div>`;
-            }
-        }
-
-        list.innerHTML = html || "לא נמצאו קרובי משפחה במאגר";
-        list.style.display = "block";
-        btn.querySelector('span').innerText = "▲";
+        box.innerHTML = html || "לא נמצאו קרובים במאגר";
+        box.style.display = "block";
     }
 </script>
 
