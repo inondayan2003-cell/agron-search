@@ -5,100 +5,151 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AGRON SYSTEM - Dark Family Edition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
-    <style>
-        :root {
-            --bg: #0b0e14;
-            --card: #151921;
-            --input: #1c222d;
-            --text: #e1e1e1;
-            --dim: #94a3b8;
-            --accent: #3b82f6;
-            --border: #2d3748;
-            --success: #10b981;
-        }
+   <style>
+    :root {
+        --bg: #05070a;
+        --card: #11141b;
+        --input: #1a1f26;
+        --accent: #3b82f6;
+        --accent-glow: rgba(59, 130, 246, 0.4);
+        --text: #ffffff;
+        --dim: #a0aec0;
+        --border: #2d3748;
+        --glass: rgba(255, 255, 255, 0.03);
+    }
 
-        body {
-            font-family: -apple-system, system-ui, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0; padding: 15px;
-            display: flex; justify-content: center;
-        }
+    body {
+        font-family: -apple-system, system-ui, sans-serif;
+        background: radial-gradient(circle at top right, #1e293b 0%, #05070a 100%);
+        background-attachment: fixed;
+        color: var(--text);
+        margin: 0; padding: 20px;
+        display: flex; justify-content: center;
+        line-height: 1.6;
+    }
 
-        .container { width: 100%; max-width: 500px; }
-        .header h1 { text-align: center; color: var(--accent); font-size: 24px; margin-bottom: 25px; letter-spacing: 1px; }
+    .container { width: 100%; max-width: 480px; }
 
-        .search-card {
-            background: var(--card); padding: 20px; border-radius: 16px;
-            border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
-        }
+    /* כותרת */
+    .header h1 {
+        text-align: center;
+        font-weight: 900;
+        font-size: 32px;
+        background: linear-gradient(to bottom, #fff 30%, #64748b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 30px;
+        letter-spacing: -1px;
+    }
 
-        .input-group { margin-bottom: 12px; }
-        input {
-            width: 100%; padding: 14px; background: var(--input);
-            border: 1px solid var(--border); border-radius: 10px;
-            color: white; font-size: 16px; box-sizing: border-box; outline: none; transition: border 0.2s;
-        }
-        input:focus { border-color: var(--accent); }
+    /* כרטיסיית חיפוש מעוצבת */
+    .search-card {
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        padding: 24px;
+        border-radius: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        margin-bottom: 25px;
+    }
 
-        button.search-btn {
-            width: 100%; padding: 15px; background: var(--accent);
-            color: white; border: none; border-radius: 10px;
-            font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;
-        }
+    .file-label {
+        display: block;
+        background: var(--glass);
+        border: 1px dashed var(--border);
+        padding: 16px;
+        border-radius: 16px;
+        text-align: center;
+        cursor: pointer;
+        font-weight: 500;
+        color: var(--dim);
+        margin-bottom: 20px;
+        transition: all 0.3s;
+    }
+    .file-label:hover { border-color: var(--accent); color: white; background: rgba(59, 130, 246, 0.05); }
 
-        /* פס התקדמות */
-        #progress-container {
-            display: none; width: 100%; background: #1e293b;
-            border-radius: 10px; height: 10px; margin: 15px 0; overflow: hidden;
-        }
-        #progress-bar { width: 0%; height: 100%; background: var(--accent); box-shadow: 0 0 10px var(--accent); transition: width 0.1s; }
+    input {
+        width: 100%; padding: 16px; background: var(--input);
+        border: 1px solid transparent; border-radius: 16px;
+        color: white; font-size: 16px; margin-bottom: 12px;
+        box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    input:focus {
+        border-color: var(--accent);
+        background: #1e252e;
+        outline: none;
+        box-shadow: 0 0 20px var(--accent-glow);
+    }
 
-        .file-label {
-            display: block; text-align: center; padding: 15px;
-            background: #1e293b; border: 1px dashed var(--border);
-            border-radius: 8px; margin-bottom: 15px; cursor: pointer;
-            font-size: 14px; color: var(--dim);
-        }
+    .search-btn {
+        width: 100%; padding: 18px; 
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: white; border: none; border-radius: 16px;
+        font-size: 18px; font-weight: 700; cursor: pointer;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        transition: all 0.3s;
+    }
+    .search-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(37, 99, 235, 0.4); }
+    .search-btn:active { transform: scale(0.97); }
 
-        #status { text-align: center; font-size: 13px; margin-bottom: 10px; color: var(--accent); min-height: 18px; }
+    /* כרטיסיות תוצאה */
+    .result-card {
+        background: var(--card);
+        padding: 22px;
+        border-radius: 24px;
+        margin-top: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: transform 0.3s;
+    }
+    .result-card:hover { transform: scale(1.02); }
 
-        /* כרטיסיית תוצאה ראשית */
-        .result-card {
-            background: var(--card); padding: 18px; border-radius: 14px;
-            border: 1px solid var(--border); margin-bottom: 15px;
-            border-right: 4px solid var(--accent);
-            animation: fadeIn 0.3s ease-out;
-        }
+    .res-name { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    
+    .tag-container { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag {
+        background: #1e293b;
+        color: #94a3b8;
+        padding: 4px 12px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
 
-        .res-name { font-size: 20px; font-weight: bold; color: #fff; margin-bottom: 5px; }
-        .res-detail { font-size: 14px; color: var(--dim); line-height: 1.6; }
+    .fam-btn {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        color: var(--accent);
+        padding: 12px;
+        border-radius: 14px;
+        margin-top: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .fam-btn:hover { background: var(--accent); color: white; }
 
-        /* כפתור משפחה */
-        .fam-btn {
-            background: transparent; border: 1px solid var(--border);
-            color: var(--accent); padding: 8px 16px; border-radius: 8px;
-            font-size: 13px; margin-top: 12px; cursor: pointer; font-weight: 600;
-        }
+    /* כרטיסיית משפחה */
+    .mini-card {
+        background: rgba(0, 0, 0, 0.2);
+        padding: 14px;
+        border-radius: 16px;
+        margin-top: 10px;
+        border-right: 4px solid var(--accent);
+        display: flex; justify-content: space-between; align-items: center;
+        animation: slideIn 0.3s ease-out;
+    }
 
-        /* תיבת משפחה */
-        .fam-box {
-            display: none; margin-top: 15px; padding: 10px;
-            background: rgba(0,0,0,0.2); border-radius: 10px;
-        }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* כרטיסיית בן משפחה קטנה */
-        .mini-card {
-            background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px;
-            margin-bottom: 10px; border-right: 3px solid var(--border);
-        }
-        .rel-label { font-size: 11px; color: var(--accent); font-weight: bold; margin-bottom: 3px; }
-        .mini-name { font-size: 16px; font-weight: bold; color: #eee; }
-        .mini-detail { font-size: 12px; color: var(--dim); }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    /* פס התקדמות */
+    #progress-container {
+        display: none; width: 100%; background: #1e293b;
+        border-radius: 20px; height: 6px; margin: 15px 0;
+    }
+    #progress-bar { width: 0%; height: 100%; background: var(--accent); border-radius: 20px; transition: 0.3s; }
+</style>
 </head>
 <body>
 
