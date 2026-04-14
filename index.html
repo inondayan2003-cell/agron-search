@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מנוע חיפוש אגרון</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        input, button { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { background-color: #007aff; color: white; border: none; font-weight: bold; cursor: pointer; }
+        .search-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        #results { margin-top: 20px; }
+        .card { background: #fff; border: 1px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-right: 5px solid #007aff; }
+        .status { font-size: 0.9em; color: #666; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>חיפוש באגרון</h1>
+    <p class="status" id="status">אנא טען את קובץ מסד הנתונים (.sqlite)</p>
+    <input type="file" id="dbfile" accept=".sqlite,.db">
+
+    <div id="search-fields" style="display:none;">
+        <div class="search-grid">
+            <input type="text" id="firstName" placeholder="שם פרטי">
+            <input type="text" id="lastName" placeholder="שם משפחה">
+        </div>
+        <input type="text" id="city" placeholder="עיר">
+        <input type="text" id="idNum" placeholder="תעודת זהות">
+        <button onclick="search()">חפש</button>
+    </div>
+
+    <div id="results"></div>
+</div>
+
+<script>
+    let db = null;
+
+    // אתחול SQL.js
+    const config = { locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}` };
+    
+    document.getElementById('dbfile').onchange = function() {
+        const f = this.files[0];
+        const r = new FileReader();
+        r.onload = function() {
+            initSqlJs(config).then(function(SQL) {
+                const Uints = new Uint8Array(r.result);
+                db = new SQL.Database(Uints);
+                document.getElementById('status').innerText = "מסד הנתונים נטען בהצלחה!";
+                document.getElementById('status').style.color = "green";
+                document.getElementById('search-fields').style.display = "block";
+            });
+        };
+        r.readAsArrayBuffer(f);
+    };
+
+    function search() {
+        if (!db) return;
+        
+        const fName = document.getElementById('firstName').value;
+        const lName = document.getElementById('lastName').value;
+        const city = document.getElementById('city').value;
+        const idNum = document.getElementById('idNum').value;
+
+        // בניית השאילתה - חשוב להתאים את שמות העמודות (FirstName, LastName וכו') לשמות האמיתיים ב-DB שלך
+        let query = "SELECT * FROM people WHERE 1=1";
+        if (fName) query += ` AND first_name LIKE '%${fName}%'`;
+        if (lName) query += ` AND last_name LIKE '%${lName}%'`;
+        if (city) query += ` AND city LIKE '%${city}%'`;
+        if (idNum) query += ` AND id_number LIKE '%${idNum}%'`;
+        query += " LIMIT 50";
+
+        try {
+            const res = db.exec(query);
+            displayResults(res);
+        } catch (e) {
+            alert("שגיאה בחיפוש: " + e.message + "\nוודא ששמות העמודות ב-DB מתאימים לקוד.");
+        }
+    }
+
+    function displayResults(res) {
+        const div = document.getElementById('results');
+        div.innerHTML = "";
+        
+        if (res.length === 0) {
+            div.innerHTML = "לא נמצאו תוצאות.";
+            return;
+        }
+
+        const columns = res[0].columns;
+        const values = res[0].values;
+
+        values.forEach(row => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            let content = "";
+            columns.forEach((col, i) => {
+                content += `<strong>${col}:</strong> ${row[i]}<br>`;
+            });
+            card.innerHTML = content;
+            div.appendChild(card);
+        });
+    }
+</script>
+
+</body>
+</html>
