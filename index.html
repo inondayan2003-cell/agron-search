@@ -3,103 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AGRON Dark System</title>
+    <title>AGRON SYSTEM - Family Edition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
     <style>
         :root {
-            --bg-color: #0b0e14;
-            --card-bg: #151921;
-            --input-bg: #1c222d;
-            --text-main: #e1e1e1;
-            --text-dim: #94a3b8;
+            --bg: #0b0e14;
+            --card: #151921;
+            --input: #1c222d;
+            --text: #e1e1e1;
+            --dim: #94a3b8;
             --accent: #3b82f6;
             --border: #2d3748;
+            --success: #10b981;
         }
 
         body {
             font-family: -apple-system, system-ui, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0; padding: 20px;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0; padding: 15px;
             display: flex; justify-content: center;
         }
 
-        .container { width: 100%; max-width: 500px; }
-        .header h1 { text-align: center; color: var(--accent); font-size: 24px; margin-bottom: 30px; letter-spacing: 1px; }
+        .container { width: 100%; max-width: 480px; }
+        .header h1 { text-align: center; color: var(--accent); font-size: 22px; margin-bottom: 25px; }
 
         .search-card {
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            margin-bottom: 25px;
+            background: var(--card); padding: 20px; border-radius: 16px;
+            border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
         }
 
-        .input-group { margin-bottom: 12px; }
         input {
-            width: 100%; padding: 14px; background: var(--input-bg);
-            border: 1px solid var(--border); border-radius: 10px;
-            color: white; font-size: 16px; box-sizing: border-box; outline: none;
+            width: 100%; padding: 12px; background: var(--input);
+            border: 1px solid var(--border); border-radius: 8px;
+            color: white; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; outline: none;
         }
         input:focus { border-color: var(--accent); }
 
         button {
-            width: 100%; padding: 15px; background: var(--accent);
-            color: white; border: none; border-radius: 10px;
-            font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;
+            width: 100%; padding: 14px; background: var(--accent);
+            color: white; border: none; border-radius: 8px;
+            font-size: 16px; font-weight: 600; cursor: pointer;
         }
 
-        /* פס התקדמות משופר */
         #progress-container {
             display: none; width: 100%; background: #1e293b;
-            border-radius: 10px; height: 12px; margin: 15px 0; overflow: hidden;
-            border: 1px solid var(--border);
+            border-radius: 20px; height: 8px; margin: 15px 0; overflow: hidden;
         }
-        #progress-bar {
-            width: 0%; height: 100%; background: var(--accent);
-            box-shadow: 0 0 15px var(--accent); transition: width 0.1s ease-out;
-        }
+        #progress-bar { width: 0%; height: 100%; background: var(--accent); transition: width 0.1s; }
 
-        .file-label {
-            display: block; text-align: center; padding: 15px;
-            background: #1e293b; border: 1px dashed var(--border);
-            border-radius: 8px; margin-bottom: 15px; cursor: pointer;
-            font-size: 14px; color: var(--text-dim);
-        }
-
-        #status { text-align: center; font-size: 13px; margin-bottom: 10px; color: var(--accent); min-height: 18px; }
+        #status { text-align: center; font-size: 13px; margin-bottom: 10px; color: var(--dim); }
 
         .result-card {
-            background: var(--card-bg); padding: 18px; border-radius: 14px;
-            border: 1px solid var(--border); margin-bottom: 15px;
+            background: var(--card); padding: 15px; border-radius: 12px;
+            border: 1px solid var(--border); margin-bottom: 12px;
             border-right: 4px solid var(--accent);
         }
+
+        .res-name { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
+        .res-detail { font-size: 14px; color: var(--dim); line-height: 1.4; }
+
+        .fam-btn {
+            background: transparent; border: 1px solid var(--border);
+            color: var(--accent); padding: 6px 12px; border-radius: 6px;
+            font-size: 13px; margin-top: 10px; width: auto;
+        }
+
+        .fam-box {
+            display: none; margin-top: 10px; padding: 10px;
+            background: rgba(0,0,0,0.2); border-radius: 6px;
+            font-size: 13px; border-top: 1px solid var(--border);
+        }
+
+        .fam-item { margin-bottom: 4px; }
+        .fam-label { color: var(--accent); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header"><h1>AGRON SYSTEM</h1></div>
+    <div class="header"><h1>AGRON PERFECT</h1></div>
 
     <div class="search-card">
-        <label class="file-label" id="fileLabel">
-            📁 לחץ לבחירת קובץ ה-agron.db שלך
+        <label style="display:block; text-align:center; padding:12px; background:#1e293b; border:1px dashed var(--border); border-radius:8px; margin-bottom:15px; cursor:pointer; font-size:14px;">
+            📁 בחר קובץ agron_perfect.db
             <input type="file" id="dbFile" accept=".db" style="display:none" onchange="loadDB(this)">
         </label>
 
-        <div id="status">ממתין לבחירת קובץ...</div>
-        
-        <div id="progress-container">
-            <div id="progress-bar"></div>
-        </div>
+        <div id="status">ממתין לטעינת קובץ...</div>
+        <div id="progress-container"><div id="progress-bar"></div></div>
 
-        <div class="input-group"><input type="text" id="inID" placeholder="מספר זהות"></div>
-        <div class="input-group"><input type="text" id="inFN" placeholder="שם פרטי"></div>
-        <div class="input-group"><input type="text" id="inLN" placeholder="שם משפחה"></div>
-        <div class="input-group"><input type="text" id="inCity" placeholder="עיר"></div>
+        <input type="text" id="inID" placeholder="מספר זהות">
+        <input type="text" id="inFN" placeholder="שם פרטי">
+        <input type="text" id="inLN" placeholder="שם משפחה">
+        <input type="text" id="inCity" placeholder="עיר">
         
-        <button onclick="doSearch()">חפש עכשיו</button>
+        <button onclick="doSearch()">חפש</button>
     </div>
 
     <div id="results"></div>
@@ -112,55 +112,36 @@
         if (!input.files[0]) return;
         const file = input.files[0];
         const status = document.getElementById('status');
-        const progressBar = document.getElementById('progress-bar');
-        const progressContainer = document.getElementById('progress-container');
+        const pBar = document.getElementById('progress-bar');
+        const pCont = document.getElementById('progress-container');
         
-        progressContainer.style.display = 'block';
-        status.innerText = "מתחיל בטעינה...";
+        pCont.style.display = 'block';
+        const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${f}` });
+        const reader = new FileReader();
 
-        try {
-            // טעינת מנוע ה-SQL
-            const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${f}` });
-            
-            const reader = new FileReader();
+        reader.onprogress = (e) => {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                requestAnimationFrame(() => {
+                    pBar.style.width = percent + '%';
+                    status.innerText = `טעינה: ${percent}%`;
+                });
+            }
+        };
 
-            // פונקציית האחוזים
-            reader.onprogress = (event) => {
-                if (event.lengthComputable) {
-                    const percent = Math.round((event.loaded / event.total) * 100);
-                    requestAnimationFrame(() => {
-                        progressBar.style.width = percent + '%';
-                        status.innerText = `טעינה מהמכשיר: ${percent}%`;
-                    });
-                }
-            };
-
-            reader.onload = async (e) => {
-                status.innerText = "הקריאה הושלמה. מעבד נתונים... (נא להמתין)";
-                progressBar.style.width = '100%';
-                
-                // הפסקה קטנה כדי לתת ל-UI להתעדכן לפני העיבוד הכבד
-                await new Promise(r => setTimeout(r, 200));
-
-                try {
-                    const arrayBuffer = e.target.result;
-                    db = new SQL.Database(new Uint8Array(arrayBuffer));
-                    status.innerText = "✅ המאגר מוכן לשימוש!";
-                    progressBar.style.backgroundColor = "#10b981"; // הופך לירוק כשמוכן
-                } catch (err) {
-                    status.innerText = "שגיאה בעיבוד. וודא שזה קובץ SQLite תקין.";
-                    console.error(err);
-                }
-            };
-
-            reader.readAsArrayBuffer(file);
-        } catch (e) {
-            status.innerText = "שגיאה: " + e.message;
-        }
+        reader.onload = e => {
+            status.innerText = "מעבד נתונים... (נא להמתין)";
+            setTimeout(() => {
+                db = new SQL.Database(new Uint8Array(e.target.result));
+                status.innerText = "✅ המאגר מוכן לשימוש!";
+                pBar.style.background = "var(--success)";
+            }, 100);
+        };
+        reader.readAsArrayBuffer(file);
     }
 
     function doSearch() {
-        if (!db) { alert("יש לטעון את הקובץ תחילה"); return; }
+        if (!db) return;
         const resDiv = document.getElementById('results');
         resDiv.innerHTML = "<p style='text-align:center'>מחפש...</p>";
 
@@ -169,37 +150,68 @@
         const ln = document.getElementById('inLN').value;
         const city = document.getElementById('inCity').value;
 
-        // בניית שאילתה חכמה
         let q = "SELECT * FROM people WHERE 1=1";
         if(id) q += ` AND זהות = '${id}'`;
         if(fn) q += ` AND פרטי LIKE '${fn}%'`;
         if(ln) q += ` AND משפחה LIKE '${ln}%'`;
         if(city) q += ` AND עיר LIKE '${city}%'`;
-        q += " LIMIT 100";
+        q += " LIMIT 50";
 
-        try {
-            const res = db.exec(q);
-            resDiv.innerHTML = "";
-            if(!res[0]) { resDiv.innerHTML = "<p style='text-align:center'>לא נמצאו תוצאות</p>"; return; }
+        const res = db.exec(q);
+        resDiv.innerHTML = "";
+        if(!res[0]) { resDiv.innerHTML = "אין תוצאות"; return; }
 
-            res[0].values.forEach(row => {
-                let p = {};
-                res[0].columns.forEach((c, i) => p[c] = row[i]);
-                const card = document.createElement('div');
-                card.className = 'result-card';
-                card.innerHTML = `
-                    <div style="font-weight:bold; font-size:18px; color:white;">${p.פרטי || ''} ${p.משפחה || ''}</div>
-                    <div style="color:var(--text-dim); font-size:14px; margin-top:8px; line-height:1.5;">
-                        <b>ת.ז:</b> ${p.זהות || 'חסר'} | <b>עיר:</b> ${p.עיר || 'לא ידוע'}<br>
-                        <b>שנת לידה:</b> ${p.שנה || 'לא ידוע'}
-                    </div>
-                `;
-                resDiv.appendChild(card);
-            });
-        } catch (e) {
-            resDiv.innerHTML = "<p style='color:red'>שגיאה בחיפוש: " + e.message + "</p>";
+        res[0].values.forEach(row => {
+            let p = {};
+            res[0].columns.forEach((c, i) => p[c] = row[i]);
+            
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            card.innerHTML = `
+                <div class="res-name">${p.פרטי} ${p.משפחה}</div>
+                <div class="res-detail">
+                    <b>ת.ז:</b> ${p.זהות} | <b>עיר:</b> ${p.עיר}<br>
+                    <b>ת. לידה:</b> ${p.תא_לידה}
+                </div>
+                <button class="fam-btn" onclick="showFamily('${p.זהות}', '${p.מז_אב}', '${p.מז_אם}', this)">משפחה ▼</button>
+                <div class="fam-box" id="box-${p.זהות}"></div>
+            `;
+            resDiv.appendChild(card);
+        });
+    }
+
+    function showFamily(myId, dadId, momId, btn) {
+        const box = document.getElementById(`box-${myId}`);
+        if(box.style.display === "block") { box.style.display = "none"; return; }
+
+        let html = "";
+        
+        // חיפוש הורים
+        const parents = db.exec(`SELECT פרטי, משפחה, זהות FROM people WHERE זהות='${dadId}' OR זהות='${momId}'`);
+        if(parents[0]) {
+            html += `<div class="fam-item"><span class="fam-label">👨‍👩‍👦 הורים:</span><br>`;
+            parents[0].values.forEach(v => html += `${v[0]} ${v[1]} (${v[2]})<br>`);
+            html += `</div>`;
         }
+
+        // חיפוש אחים (למי שיש אותו אבא)
+        if(dadId && dadId !== '0') {
+            const siblings = db.exec(`SELECT פרטי, משפחה FROM people WHERE מז_אב='${dadId}' AND זהות!='${myId}' LIMIT 10`);
+            if(siblings[0]) {
+                html += `<div class="fam-item"><span class="fam-label">👫 אחים:</span> ${siblings[0].values.map(v => v[0]).join(", ")}</div>`;
+            }
+        }
+
+        // חיפוש ילדים (למי שרשום כאבא או אמא שלהם)
+        const kids = db.exec(`SELECT פרטי, משפחה FROM people WHERE מז_אב='${myId}' OR מז_אם='${myId}'`);
+        if(kids[0]) {
+            html += `<div class="fam-item"><span class="fam-label">👶 ילדים:</span> ${kids[0].values.map(v => v[0]).join(", ")}</div>`;
+        }
+
+        box.innerHTML = html || "לא נמצאו קרובים";
+        box.style.display = "block";
     }
 </script>
+
 </body>
 </html>
