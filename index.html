@@ -179,34 +179,75 @@
             resDiv.appendChild(card);
         });
     }
+     function showFamily(myId, dadId, momId, btn) {
+    const box = document.getElementById(`box-${myId}`);
+    
+    // אם התיבה כבר פתוחה - סגור אותה
+    if(box.style.display === "block") { 
+        box.style.display = "none"; 
+        return; 
+    }
 
-    function showFamily(myId, dadId, momId, btn) {
-        const box = document.getElementById(`box-${myId}`);
-        if(box.style.display === "block") { box.style.display = "none"; return; }
+    box.innerHTML = "<p style='text-align:center; color:var(--accent);'>מחפש קרובים...</p>";
+    box.style.display = "block";
 
-        let html = "";
-        
-        // חיפוש הורים
-        const parents = db.exec(`SELECT פרטי, משפחה, זהות FROM people WHERE זהות='${dadId}' OR זהות='${momId}'`);
-        if(parents[0]) {
-            html += `<div class="fam-item"><span class="fam-label">👨‍👩‍👦 הורים:</span><br>`;
-            parents[0].values.forEach(v => html += `${v[0]} ${v[1]} (${v[2]})<br>`);
-            html += `</div>`;
+    let familyCards = "";
+
+    // פונקציית עזר ליצירת כרטיסייה קטנה ומעוצבת לבן משפחה
+    const createMiniCard = (person, relation) => {
+        return `
+            <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 8px; border-right: 3px solid #555;">
+                <div style="font-size: 11px; color: var(--accent); font-weight: bold; text-transform: uppercase;">${relation}</div>
+                <div style="font-weight: bold; font-size: 15px;">${person.פרטי} ${person.משפחה}</div>
+                <div style="font-size: 13px; color: var(--dim);">
+                    ת.ז: ${person.זהות} | עיר: ${person.עיר}
+                </div>
+            </div>
+        `;
+    };
+
+    // 1. חיפוש הורים
+    const parents = db.exec(`SELECT * FROM people WHERE זהות='${dadId}' OR זהות='${momId}'`);
+    if(parents[0]) {
+        parents[0].values.forEach(row => {
+            let p = {};
+            parents[0].columns.forEach((c, i) => p[c] = row[i]);
+            const relation = (p.זהות === dadId) ? "אבא" : "אמא";
+            familyCards += createMiniCard(p, relation);
+        });
+    }
+
+    // 2. חיפוש אחים (לפי אבא)
+    if(dadId && dadId !== '0') {
+        const siblings = db.exec(`SELECT * FROM people WHERE מז_אב='${dadId}' AND זהות!='${myId}' LIMIT 15`);
+        if(siblings[0]) {
+            siblings[0].values.forEach(row => {
+                let p = {};
+                siblings[0].columns.forEach((c, i) => p[c] = row[i]);
+                familyCards += createMiniCard(p, "אח/אחות");
+            });
         }
+    }
 
-        // חיפוש אחים (למי שיש אותו אבא)
-        if(dadId && dadId !== '0') {
-            const siblings = db.exec(`SELECT פרטי, משפחה FROM people WHERE מז_אב='${dadId}' AND זהות!='${myId}' LIMIT 10`);
-            if(siblings[0]) {
-                html += `<div class="fam-item"><span class="fam-label">👫 אחים:</span> ${siblings[0].values.map(v => v[0]).join(", ")}</div>`;
-            }
-        }
+    // 3. חיפוש ילדים
+    const kids = db.exec(`SELECT * FROM people WHERE מז_אב='${myId}' OR מז_אם='${myId}' LIMIT 15`);
+    if(kids[0]) {
+        kids[0].values.forEach(row => {
+            let p = {};
+            kids[0].columns.forEach((c, i) => p[c] = row[i]);
+            familyCards += createMiniCard(p, "ילד/ה");
+        });
+    }
 
-        // חיפוש ילדים (למי שרשום כאבא או אמא שלהם)
-        const kids = db.exec(`SELECT פרטי, משפחה FROM people WHERE מז_אב='${myId}' OR מז_אם='${myId}'`);
-        if(kids[0]) {
-            html += `<div class="fam-item"><span class="fam-label">👶 ילדים:</span> ${kids[0].values.map(v => v[0]).join(", ")}</div>`;
-        }
+    // הצגת התוצאות
+    if (familyCards === "") {
+        box.innerHTML = "<div style='text-align:center; padding: 10px; color: var(--dim);'>לא נמצאו קרובים במאגר</div>";
+    } else {
+        box.innerHTML = familyCards;
+    }
+}
+     
+
 
         box.innerHTML = html || "לא נמצאו קרובים";
         box.style.display = "block";
