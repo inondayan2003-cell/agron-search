@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>מערכת אגרון - Dark Edition</title>
+    <title>AGRON Dark System</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
     <style>
         :root {
@@ -18,31 +18,15 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center;
         }
 
-        .container {
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            color: var(--accent);
-        }
+        .container { width: 100%; max-width: 500px; }
+        .header h1 { text-align: center; color: var(--accent); font-size: 24px; margin-bottom: 30px; }
 
         .search-card {
             background: var(--card-bg);
@@ -53,136 +37,60 @@
             margin-bottom: 25px;
         }
 
-        .input-group {
-            margin-bottom: 12px;
-        }
-
+        .input-group { margin-bottom: 12px; }
         input {
-            width: 100%;
-            padding: 14px;
-            background: var(--input-bg);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-            box-sizing: border-box;
-            transition: all 0.2s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            width: 100%; padding: 14px; background: var(--input-bg);
+            border: 1px solid var(--border); border-radius: 10px;
+            color: white; font-size: 16px; box-sizing: border-box;
         }
 
         button {
-            width: 100%;
-            padding: 15px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
+            width: 100%; padding: 15px; background: var(--accent);
+            color: white; border: none; border-radius: 10px;
+            font-size: 16px; font-weight: 600; cursor: pointer;
         }
 
-        button:hover {
-            background: var(--accent-hover);
+        /* פס התקדמות */
+        #progress-container {
+            display: none; width: 100%; background: #1e293b;
+            border-radius: 10px; height: 10px; margin: 15px 0; overflow: hidden;
+        }
+        #progress-bar {
+            width: 0%; height: 100%; background: var(--accent);
+            box-shadow: 0 0 10px var(--accent); transition: width 0.2s;
         }
 
         .file-label {
-            display: block;
-            text-align: center;
-            padding: 10px;
-            background: #1e293b;
-            border: 1px dashed var(--border);
-            border-radius: 8px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            font-size: 14px;
-            color: var(--text-dim);
+            display: block; text-align: center; padding: 15px;
+            background: #1e293b; border: 1px dashed var(--border);
+            border-radius: 8px; margin-bottom: 15px; cursor: pointer;
+            font-size: 14px; color: var(--text-dim);
         }
 
         .result-card {
-            background: var(--card-bg);
-            padding: 18px;
-            border-radius: 14px;
-            border: 1px solid var(--border);
-            margin-bottom: 15px;
-            animation: fadeIn 0.3s ease;
+            background: var(--card-bg); padding: 18px; border-radius: 14px;
+            border: 1px solid var(--border); margin-bottom: 15px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result-name {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: white;
-        }
-
-        .result-info {
-            font-size: 14px;
-            color: var(--text-dim);
-            line-height: 1.6;
-        }
-
-        .age-pill {
-            display: inline-block;
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--accent);
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 12px;
-        }
-
-        .family-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-dim);
-            padding: 8px;
-            margin-top: 12px;
-            font-size: 13px;
-        }
-
-        .family-list {
-            display: none;
-            margin-top: 12px;
-            padding: 12px;
-            background: var(--bg-color);
-            border-radius: 8px;
-            font-size: 13px;
-            border-left: 2px solid var(--accent);
-        }
-
-        #status {
-            text-align: center;
-            font-size: 12px;
-            margin-bottom: 15px;
-            color: var(--text-dim);
-        }
+        #status { text-align: center; font-size: 13px; margin-bottom: 5px; color: var(--accent); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1>AGRON SYSTEM</h1>
-    </div>
+    <div class="header"><h1>AGRON SYSTEM</h1></div>
 
     <div class="search-card">
         <label class="file-label" id="fileLabel">
-            📁 לחץ לטעינת קובץ המאגר (agron.db)
+            📁 לחץ לבחירת קובץ agron.db
             <input type="file" id="dbFile" accept=".db" style="display:none" onchange="loadDB(this)">
         </label>
-        <div id="status">ממתין לטעינת נתונים...</div>
+
+        <div id="status">ממתין לבחירת קובץ...</div>
+        
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
 
         <div class="input-group"><input type="text" id="inID" placeholder="מספר זהות"></div>
         <div class="input-group"><input type="text" id="inFN" placeholder="שם פרטי"></div>
@@ -200,29 +108,50 @@
 
     async function loadDB(input) {
         if (!input.files[0]) return;
+        const file = input.files[0];
         const status = document.getElementById('status');
-        const label = document.getElementById('fileLabel');
-        status.innerText = "טוען... נא להמתין";
+        const progressBar = document.getElementById('progress-bar');
+        const progressContainer = document.getElementById('progress-container');
         
+        progressContainer.style.display = 'block';
+        status.innerText = "קורא קובץ: 0%";
+
         try {
             const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${f}` });
             const reader = new FileReader();
-            reader.onload = function() {
-                db = new SQL.Database(new Uint8Array(reader.result));
-                status.innerText = "✅ המאגר נטען בהצלחה";
-                label.style.borderColor = "var(--accent)";
-                label.innerText = "✅ קובץ טעון: " + input.files[0].name;
+
+            // עדכון אחוזים בזמן אמת
+            reader.onprogress = function(event) {
+                if (event.lengthComputable) {
+                    const percent = Math.round((event.loaded / event.total) * 100);
+                    progressBar.style.width = percent + '%';
+                    status.innerText = `קורא קובץ מהמכשיר: ${percent}%`;
+                }
             };
-            reader.readAsArrayBuffer(input.files[0]);
+
+            reader.onload = function() {
+                status.innerText = "מעבד נתונים... (זה השלב הכי כבד)";
+                setTimeout(() => {
+                    try {
+                        db = new SQL.Database(new Uint8Array(reader.result));
+                        status.innerText = "✅ המאגר מוכן לחיפוש!";
+                        progressBar.style.backgroundColor = "#10b981"; // צבע ירוק כשסיים
+                    } catch (e) {
+                        status.innerText = "שגיאה בעיבוד ה-DB. אולי הקובץ פגום?";
+                    }
+                }, 100);
+            };
+
+            reader.readAsArrayBuffer(file);
         } catch (e) {
-            status.innerText = "שגיאה: " + e.message;
+            status.innerText = "שגיאה בטעינה: " + e.message;
         }
     }
 
     function doSearch() {
-        if (!db) { alert("אנא טען את קובץ ה-db תחילה"); return; }
+        if (!db) { alert("טען קודם את הקובץ"); return; }
         const resDiv = document.getElementById('results');
-        resDiv.innerHTML = "";
+        resDiv.innerHTML = "<p style='text-align:center'>מחפש...</p>";
 
         const id = document.getElementById('inID').value;
         const fn = document.getElementById('inFN').value;
@@ -236,47 +165,28 @@
         if(city) q += ` AND עיר LIKE '${city}%'`;
         q += " LIMIT 50";
 
-        const res = db.exec(q);
-        if(!res[0]) { resDiv.innerHTML = "<p style='text-align:center'>לא נמצאו תוצאות</p>"; return; }
+        try {
+            const res = db.exec(q);
+            resDiv.innerHTML = "";
+            if(!res[0]) { resDiv.innerHTML = "<p style='text-align:center'>לא נמצאו תוצאות</p>"; return; }
 
-        res[0].values.forEach(row => {
-            let p = {};
-            res[0].columns.forEach((c, i) => p[c] = row[i]);
-            const age = 2026 - (parseInt(p.שנה) || 0);
-
-            const card = document.createElement('div');
-            card.className = 'result-card';
-            card.innerHTML = `
-                <div class="result-name">${p.פרטי} ${p.משפחה}</div>
-                <div class="result-info">
-                    <b>ת.ז:</b> ${p.זהות} | <b>עיר:</b> ${p.עיר}<br>
-                    <b>נולד ב:</b> ${p.שנה} <span class="age-pill">בן/בת ${age}</span>
-                </div>
-                <button class="family-btn" onclick="getFamily('${p.זהות}', '${p.מז_אב}', '${p.מז_אם}', this)">בני משפחה ▼</button>
-                <div class="family-list" id="fam-${p.זהות}"></div>
-            `;
-            resDiv.appendChild(card);
-        });
-    }
-
-    function getFamily(myId, dad, mom, btn) {
-        const box = document.getElementById(`fam-${myId}`);
-        if(box.style.display === "block") { box.style.display = "none"; return; }
-
-        let html = "";
-        const p = db.exec(`SELECT פרטי, משפחה FROM people WHERE זהות='${dad}' OR זהות='${mom}'`);
-        if(p[0]) html += "<b>👨‍👩‍👦 הורים:</b> " + p[0].values.map(v => v[0]+' '+v[1]).join(", ") + "<br>";
-        
-        const c = db.exec(`SELECT פרטי, משפחה FROM people WHERE מז_אב='${myId}' OR מז_אם='${myId}'`);
-        if(c[0]) html += "<b>👶 ילדים:</b> " + c[0].values.map(v => v[0]+' '+v[1]).join(", ") + "<br>";
-
-        const s = db.exec(`SELECT פרטי FROM people WHERE מז_אב='${dad}' AND זהות!='${myId}' AND מז_אב!='' LIMIT 5`);
-        if(s[0]) html += "<b>👫 אחים:</b> " + s[0].values.map(v => v[0]).join(", ");
-
-        box.innerHTML = html || "לא נמצאו קרובים במאגר";
-        box.style.display = "block";
+            res[0].values.forEach(row => {
+                let p = {};
+                res[0].columns.forEach((c, i) => p[c] = row[i]);
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.innerHTML = `
+                    <div style="font-weight:bold; font-size:18px;">${p.פרטי} ${p.משפחה}</div>
+                    <div style="color:var(--text-dim); font-size:14px; margin-top:5px;">
+                        ת.ז: ${p.זהות} | עיר: ${p.עיר} | לידה: ${p.שנה}
+                    </div>
+                `;
+                resDiv.appendChild(card);
+            });
+        } catch (e) {
+            resDiv.innerHTML = "שגיאה בחיפוש: " + e.message;
+        }
     }
 </script>
-
 </body>
 </html>
