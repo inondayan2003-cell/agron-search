@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AGRON SYSTEM - Family Edition</title>
+    <title>AGRON SYSTEM - Dark Family Edition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
     <style>
         :root {
@@ -25,8 +25,8 @@
             display: flex; justify-content: center;
         }
 
-        .container { width: 100%; max-width: 480px; }
-        .header h1 { text-align: center; color: var(--accent); font-size: 22px; margin-bottom: 25px; }
+        .container { width: 100%; max-width: 500px; }
+        .header h1 { text-align: center; color: var(--accent); font-size: 24px; margin-bottom: 25px; letter-spacing: 1px; }
 
         .search-card {
             background: var(--card); padding: 20px; border-radius: 16px;
@@ -34,50 +34,70 @@
             margin-bottom: 20px;
         }
 
+        .input-group { margin-bottom: 12px; }
         input {
-            width: 100%; padding: 12px; background: var(--input);
-            border: 1px solid var(--border); border-radius: 8px;
-            color: white; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; outline: none;
+            width: 100%; padding: 14px; background: var(--input);
+            border: 1px solid var(--border); border-radius: 10px;
+            color: white; font-size: 16px; box-sizing: border-box; outline: none; transition: border 0.2s;
         }
         input:focus { border-color: var(--accent); }
 
-        button {
-            width: 100%; padding: 14px; background: var(--accent);
-            color: white; border: none; border-radius: 8px;
-            font-size: 16px; font-weight: 600; cursor: pointer;
+        button.search-btn {
+            width: 100%; padding: 15px; background: var(--accent);
+            color: white; border: none; border-radius: 10px;
+            font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;
         }
 
+        /* פס התקדמות */
         #progress-container {
             display: none; width: 100%; background: #1e293b;
-            border-radius: 20px; height: 8px; margin: 15px 0; overflow: hidden;
+            border-radius: 10px; height: 10px; margin: 15px 0; overflow: hidden;
         }
-        #progress-bar { width: 0%; height: 100%; background: var(--accent); transition: width 0.1s; }
+        #progress-bar { width: 0%; height: 100%; background: var(--accent); box-shadow: 0 0 10px var(--accent); transition: width 0.1s; }
 
-        #status { text-align: center; font-size: 13px; margin-bottom: 10px; color: var(--dim); }
+        .file-label {
+            display: block; text-align: center; padding: 15px;
+            background: #1e293b; border: 1px dashed var(--border);
+            border-radius: 8px; margin-bottom: 15px; cursor: pointer;
+            font-size: 14px; color: var(--dim);
+        }
 
+        #status { text-align: center; font-size: 13px; margin-bottom: 10px; color: var(--accent); min-height: 18px; }
+
+        /* כרטיסיית תוצאה ראשית */
         .result-card {
-            background: var(--card); padding: 15px; border-radius: 12px;
-            border: 1px solid var(--border); margin-bottom: 12px;
+            background: var(--card); padding: 18px; border-radius: 14px;
+            border: 1px solid var(--border); margin-bottom: 15px;
             border-right: 4px solid var(--accent);
+            animation: fadeIn 0.3s ease-out;
         }
 
-        .res-name { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
-        .res-detail { font-size: 14px; color: var(--dim); line-height: 1.4; }
+        .res-name { font-size: 20px; font-weight: bold; color: #fff; margin-bottom: 5px; }
+        .res-detail { font-size: 14px; color: var(--dim); line-height: 1.6; }
 
+        /* כפתור משפחה */
         .fam-btn {
             background: transparent; border: 1px solid var(--border);
-            color: var(--accent); padding: 6px 12px; border-radius: 6px;
-            font-size: 13px; margin-top: 10px; width: auto;
+            color: var(--accent); padding: 8px 16px; border-radius: 8px;
+            font-size: 13px; margin-top: 12px; cursor: pointer; font-weight: 600;
         }
 
+        /* תיבת משפחה */
         .fam-box {
-            display: none; margin-top: 10px; padding: 10px;
-            background: rgba(0,0,0,0.2); border-radius: 6px;
-            font-size: 13px; border-top: 1px solid var(--border);
+            display: none; margin-top: 15px; padding: 10px;
+            background: rgba(0,0,0,0.2); border-radius: 10px;
         }
 
-        .fam-item { margin-bottom: 4px; }
-        .fam-label { color: var(--accent); font-weight: bold; }
+        /* כרטיסיית בן משפחה קטנה */
+        .mini-card {
+            background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px;
+            margin-bottom: 10px; border-right: 3px solid var(--border);
+        }
+        .rel-label { font-size: 11px; color: var(--accent); font-weight: bold; margin-bottom: 3px; }
+        .mini-name { font-size: 16px; font-weight: bold; color: #eee; }
+        .mini-detail { font-size: 12px; color: var(--dim); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -86,12 +106,12 @@
     <div class="header"><h1>AGRON PERFECT</h1></div>
 
     <div class="search-card">
-        <label style="display:block; text-align:center; padding:12px; background:#1e293b; border:1px dashed var(--border); border-radius:8px; margin-bottom:15px; cursor:pointer; font-size:14px;">
-            📁 בחר קובץ agron_perfect.db
+        <label class="file-label" id="fileLabel">
+            📁 לחץ לבחירת קובץ agron_perfect.db
             <input type="file" id="dbFile" accept=".db" style="display:none" onchange="loadDB(this)">
         </label>
 
-        <div id="status">ממתין לטעינת קובץ...</div>
+        <div id="status">ממתין לטעינת מאגר...</div>
         <div id="progress-container"><div id="progress-bar"></div></div>
 
         <input type="text" id="inID" placeholder="מספר זהות">
@@ -99,7 +119,7 @@
         <input type="text" id="inLN" placeholder="שם משפחה">
         <input type="text" id="inCity" placeholder="עיר">
         
-        <button onclick="doSearch()">חפש</button>
+        <button class="search-btn" onclick="doSearch()">חפש עכשיו</button>
     </div>
 
     <div id="results"></div>
@@ -112,36 +132,47 @@
         if (!input.files[0]) return;
         const file = input.files[0];
         const status = document.getElementById('status');
-        const pBar = document.getElementById('progress-bar');
-        const pCont = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressContainer = document.getElementById('progress-container');
         
-        pCont.style.display = 'block';
-        const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${f}` });
-        const reader = new FileReader();
+        progressContainer.style.display = 'block';
+        status.innerText = "מתחיל בטעינה...";
 
-        reader.onprogress = (e) => {
-            if (e.lengthComputable) {
-                const percent = Math.round((e.loaded / e.total) * 100);
-                requestAnimationFrame(() => {
-                    pBar.style.width = percent + '%';
-                    status.innerText = `טעינה: ${percent}%`;
-                });
-            }
-        };
+        try {
+            const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${f}` });
+            const reader = new FileReader();
 
-        reader.onload = e => {
-            status.innerText = "מעבד נתונים... (נא להמתין)";
-            setTimeout(() => {
-                db = new SQL.Database(new Uint8Array(e.target.result));
-                status.innerText = "✅ המאגר מוכן לשימוש!";
-                pBar.style.background = "var(--success)";
-            }, 100);
-        };
-        reader.readAsArrayBuffer(file);
+            reader.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const percent = Math.round((event.loaded / event.total) * 100);
+                    requestAnimationFrame(() => {
+                        progressBar.style.width = percent + '%';
+                        status.innerText = `טעינה מהמכשיר: ${percent}%`;
+                    });
+                }
+            };
+
+            reader.onload = async (e) => {
+                status.innerText = "מעבד נתונים... (נא להמתין)";
+                progressBar.style.width = '100%';
+                await new Promise(r => setTimeout(r, 200));
+
+                try {
+                    db = new SQL.Database(new Uint8Array(e.target.result));
+                    status.innerText = "✅ המאגר מוכן לשימוש!";
+                    progressBar.style.backgroundColor = "var(--success)";
+                } catch (err) {
+                    status.innerText = "שגיאה בעיבוד הקובץ.";
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        } catch (e) {
+            status.innerText = "שגיאה: " + e.message;
+        }
     }
 
     function doSearch() {
-        if (!db) return;
+        if (!db) { alert("יש לטעון קובץ תחילה"); return; }
         const resDiv = document.getElementById('results');
         resDiv.innerHTML = "<p style='text-align:center'>מחפש...</p>";
 
@@ -157,102 +188,84 @@
         if(city) q += ` AND עיר LIKE '${city}%'`;
         q += " LIMIT 50";
 
-        const res = db.exec(q);
-        resDiv.innerHTML = "";
-        if(!res[0]) { resDiv.innerHTML = "אין תוצאות"; return; }
+        try {
+            const res = db.exec(q);
+            resDiv.innerHTML = "";
+            if(!res[0]) { resDiv.innerHTML = "<p style='text-align:center'>לא נמצאו תוצאות</p>"; return; }
 
-        res[0].values.forEach(row => {
-            let p = {};
-            res[0].columns.forEach((c, i) => p[c] = row[i]);
-            
-            const card = document.createElement('div');
-            card.className = 'result-card';
-            card.innerHTML = `
-                <div class="res-name">${p.פרטי} ${p.משפחה}</div>
-                <div class="res-detail">
-                    <b>ת.ז:</b> ${p.זהות} | <b>עיר:</b> ${p.עיר}<br>
-                    <b>ת. לידה:</b> ${p.תא_לידה}
-                </div>
-                <button class="fam-btn" onclick="showFamily('${p.זהות}', '${p.מז_אב}', '${p.מז_אם}', this)">משפחה ▼</button>
-                <div class="fam-box" id="box-${p.זהות}"></div>
-            `;
-            resDiv.appendChild(card);
-        });
-    }
-     function showFamily(myId, dadId, momId, btn) {
-    const box = document.getElementById(`box-${myId}`);
-    
-    // אם התיבה כבר פתוחה - סגור אותה
-    if(box.style.display === "block") { 
-        box.style.display = "none"; 
-        return; 
-    }
-
-    box.innerHTML = "<p style='text-align:center; color:var(--accent);'>מחפש קרובים...</p>";
-    box.style.display = "block";
-
-    let familyCards = "";
-
-    // פונקציית עזר ליצירת כרטיסייה קטנה ומעוצבת לבן משפחה
-    const createMiniCard = (person, relation) => {
-        return `
-            <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 8px; border-right: 3px solid #555;">
-                <div style="font-size: 11px; color: var(--accent); font-weight: bold; text-transform: uppercase;">${relation}</div>
-                <div style="font-weight: bold; font-size: 15px;">${person.פרטי} ${person.משפחה}</div>
-                <div style="font-size: 13px; color: var(--dim);">
-                    ת.ז: ${person.זהות} | עיר: ${person.עיר}
-                </div>
-            </div>
-        `;
-    };
-
-    // 1. חיפוש הורים
-    const parents = db.exec(`SELECT * FROM people WHERE זהות='${dadId}' OR זהות='${momId}'`);
-    if(parents[0]) {
-        parents[0].values.forEach(row => {
-            let p = {};
-            parents[0].columns.forEach((c, i) => p[c] = row[i]);
-            const relation = (p.זהות === dadId) ? "אבא" : "אמא";
-            familyCards += createMiniCard(p, relation);
-        });
-    }
-
-    // 2. חיפוש אחים (לפי אבא)
-    if(dadId && dadId !== '0') {
-        const siblings = db.exec(`SELECT * FROM people WHERE מז_אב='${dadId}' AND זהות!='${myId}' LIMIT 15`);
-        if(siblings[0]) {
-            siblings[0].values.forEach(row => {
+            res[0].values.forEach(row => {
                 let p = {};
-                siblings[0].columns.forEach((c, i) => p[c] = row[i]);
-                familyCards += createMiniCard(p, "אח/אחות");
+                res[0].columns.forEach((c, i) => p[c] = row[i]);
+                
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.innerHTML = `
+                    <div class="res-name">${p.פרטי} ${p.משפחה}</div>
+                    <div class="res-detail">
+                        <b>ת.ז:</b> ${p.זהות} | <b>עיר:</b> ${p.עיר}<br>
+                        <b>תאריך לידה:</b> ${p.תא_לידה}
+                    </div>
+                    <button class="fam-btn" onclick="showFamily('${p.זהות}', '${p.מז_אב}', '${p.מז_אם}', this)">הצג משפחה ▼</button>
+                    <div class="fam-box" id="box-${p.זהות}"></div>
+                `;
+                resDiv.appendChild(card);
             });
+        } catch (e) {
+            resDiv.innerHTML = "שגיאה בחיפוש.";
         }
     }
 
-    // 3. חיפוש ילדים
-    const kids = db.exec(`SELECT * FROM people WHERE מז_אב='${myId}' OR מז_אם='${myId}' LIMIT 15`);
-    if(kids[0]) {
-        kids[0].values.forEach(row => {
-            let p = {};
-            kids[0].columns.forEach((c, i) => p[c] = row[i]);
-            familyCards += createMiniCard(p, "ילד/ה");
-        });
-    }
+    function showFamily(myId, dadId, momId, btn) {
+        const box = document.getElementById(`box-${myId}`);
+        if(box.style.display === "block") { 
+            box.style.display = "none"; 
+            btn.innerText = "הצג משפחה ▼";
+            return; 
+        }
 
-    // הצגת התוצאות
-    if (familyCards === "") {
-        box.innerHTML = "<div style='text-align:center; padding: 10px; color: var(--dim);'>לא נמצאו קרובים במאגר</div>";
-    } else {
-        box.innerHTML = familyCards;
-    }
-}
-     
-
-
-        box.innerHTML = html || "לא נמצאו קרובים";
+        box.innerHTML = "<p style='text-align:center; font-size:12px;'>מחפש קרובים...</p>";
         box.style.display = "block";
+        btn.innerText = "סגור משפחה ▲";
+
+        let familyHtml = "";
+        const createMini = (p, rel) => `
+            <div class="mini-card">
+                <div class="rel-label">${rel}</div>
+                <div class="mini-name">${p.פרטי} ${p.משפחה}</div>
+                <div class="mini-detail">ת.ז: ${p.זהות} | עיר: ${p.עיר}</div>
+            </div>`;
+
+        // הורים
+        const parents = db.exec(`SELECT * FROM people WHERE זהות='${dadId}' OR זהות='${momId}'`);
+        if(parents[0]) {
+            parents[0].values.forEach(row => {
+                let p = {}; parents[0].columns.forEach((c, i) => p[c] = row[i]);
+                familyHtml += createMini(p, (p.זהות === dadId) ? "אבא" : "אמא");
+            });
+        }
+
+        // אחים
+        if(dadId && dadId !== '0') {
+            const sibs = db.exec(`SELECT * FROM people WHERE מז_אב='${dadId}' AND זהות!='${myId}' LIMIT 10`);
+            if(sibs[0]) {
+                sibs[0].values.forEach(row => {
+                    let p = {}; sibs[0].columns.forEach((c, i) => p[c] = row[i]);
+                    familyHtml += createMini(p, "אח / אחות");
+                });
+            }
+        }
+
+        // ילדים
+        const kids = db.exec(`SELECT * FROM people WHERE מז_אב='${myId}' OR מז_אם='${myId}'`);
+        if(kids[0]) {
+            kids[0].values.forEach(row => {
+                let p = {}; kids[0].columns.forEach((c, i) => p[c] = row[i]);
+                familyHtml += createMini(p, "ילד / ה");
+            });
+        }
+
+        box.innerHTML = familyHtml || "<p style='text-align:center; color:var(--dim); font-size:12px;'>לא נמצאו קרובים</p>";
     }
 </script>
-
 </body>
 </html>
