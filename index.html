@@ -180,29 +180,68 @@
     let db = null;
 
     async function loadDB(input) {
-        if (!input.files[0]) return;
-        const file = input.files[0];
-        const status = document.getElementById('status');
-        const progressBar = document.getElementById('progress-bar');
-        const progressContainer = document.getElementById('progress-container');
+    if (!input.files[0]) return;
+    const file = input.files[0];
+    const status = document.getElementById('status');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    
+    progressContainer.style.display = 'block';
+    status.innerText = "מתחיל בטעינה (אייפון)...";
+
+    try {
+        // טעינת המנוע בצורה אסינכרונית מלאה
+        const SQL = await initSqlJs({ 
+            locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${f}` 
+        });
         
-        progressContainer.style.display = 'block';
-        status.innerText = "מתחיל בטעינה...";
+        const reader = new FileReader();
 
-        try {
-            const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${f}` });
-            const reader = new FileReader();
+        reader.onprogress = (event) => {
+            if (event.lengthComputable) {
+                const percent = Math.round((event.loaded / event.total) * 100);
+                requestAnimationFrame(() => {
+                    progressBar.style.width = percent + '%';
+                    status.innerText = `טעינה מהמכשיר: ${percent}%`;
+                });
+            }
+        };
 
-            reader.onprogress = (event) => {
-                if (event.lengthComputable) {
-                    const percent = Math.round((event.loaded / event.total) * 100);
-                    requestAnimationFrame(() => {
-                        progressBar.style.width = percent + '%';
-                        status.innerText = `טעינה מהמכשיר: ${percent}%`;
-                    });
-                }
-            };
+        reader.onload = async (e) => {
+            status.innerText = "הקובץ נקרא. מעבד... (זה עשוי לקחת רגע)";
+            progressBar.style.width = '100%';
+            
+            // הפסקה ארוכה יותר לאייפון כדי לשחרר את ה-UI thread
+            await new Promise(r => setTimeout(r, 500));
 
+            try {
+                const arrayBuffer = e.target.result;
+                // יצירת ה-Uint8Array בנפרד כדי לחסוך זיכרון כפול
+                const uInt8Array = new Uint8Array(arrayBuffer);
+                
+                // טעינת ה-DB
+                db = new SQL.Database(uInt8Array);
+                
+                status.innerText = "✅ המאגר מוכן לשימוש!";
+                progressBar.style.backgroundColor = "var(--success)";
+                
+                // ניקוי המשתנה הזמני כדי למנוע קריסה
+                input.value = ""; 
+            } catch (err) {
+                console.error(err);
+                status.innerText = "שגיאה בעיבוד: וודא שהקובץ הוא ה-agron_perfect.db";
+            }
+        };
+
+        reader.onerror = () => {
+            status.innerText = "שגיאה בקריאת הקובץ מהמכשיר.";
+        };
+
+        reader.readAsArrayBuffer(file);
+    } catch (e) {
+        status.innerText = "שגיאה בטעינת המנוע: " + e.message;
+    }
+}
             reader.onload = async (e) => {
                 status.innerText = "מעבד נתונים... (נא להמתין)";
                 progressBar.style.width = '100%';
