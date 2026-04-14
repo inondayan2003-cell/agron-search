@@ -13,12 +13,11 @@
             --text-main: #e1e1e1;
             --text-dim: #94a3b8;
             --accent: #3b82f6;
-            --accent-hover: #2563eb;
             --border: #2d3748;
         }
 
         body {
-            font-family: -apple-system, sans-serif;
+            font-family: -apple-system, system-ui, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0; padding: 20px;
@@ -26,7 +25,7 @@
         }
 
         .container { width: 100%; max-width: 500px; }
-        .header h1 { text-align: center; color: var(--accent); font-size: 24px; margin-bottom: 30px; }
+        .header h1 { text-align: center; color: var(--accent); font-size: 24px; margin-bottom: 30px; letter-spacing: 1px; }
 
         .search-card {
             background: var(--card-bg);
@@ -41,23 +40,25 @@
         input {
             width: 100%; padding: 14px; background: var(--input-bg);
             border: 1px solid var(--border); border-radius: 10px;
-            color: white; font-size: 16px; box-sizing: border-box;
+            color: white; font-size: 16px; box-sizing: border-box; outline: none;
         }
+        input:focus { border-color: var(--accent); }
 
         button {
             width: 100%; padding: 15px; background: var(--accent);
             color: white; border: none; border-radius: 10px;
-            font-size: 16px; font-weight: 600; cursor: pointer;
+            font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;
         }
 
-        /* פס התקדמות */
+        /* פס התקדמות משופר */
         #progress-container {
             display: none; width: 100%; background: #1e293b;
-            border-radius: 10px; height: 10px; margin: 15px 0; overflow: hidden;
+            border-radius: 10px; height: 12px; margin: 15px 0; overflow: hidden;
+            border: 1px solid var(--border);
         }
         #progress-bar {
             width: 0%; height: 100%; background: var(--accent);
-            box-shadow: 0 0 10px var(--accent); transition: width 0.2s;
+            box-shadow: 0 0 15px var(--accent); transition: width 0.1s ease-out;
         }
 
         .file-label {
@@ -67,12 +68,13 @@
             font-size: 14px; color: var(--text-dim);
         }
 
+        #status { text-align: center; font-size: 13px; margin-bottom: 10px; color: var(--accent); min-height: 18px; }
+
         .result-card {
             background: var(--card-bg); padding: 18px; border-radius: 14px;
             border: 1px solid var(--border); margin-bottom: 15px;
+            border-right: 4px solid var(--accent);
         }
-
-        #status { text-align: center; font-size: 13px; margin-bottom: 5px; color: var(--accent); }
     </style>
 </head>
 <body>
@@ -82,7 +84,7 @@
 
     <div class="search-card">
         <label class="file-label" id="fileLabel">
-            📁 לחץ לבחירת קובץ agron.db
+            📁 לחץ לבחירת קובץ ה-agron.db שלך
             <input type="file" id="dbFile" accept=".db" style="display:none" onchange="loadDB(this)">
         </label>
 
@@ -114,42 +116,51 @@
         const progressContainer = document.getElementById('progress-container');
         
         progressContainer.style.display = 'block';
-        status.innerText = "קורא קובץ: 0%";
+        status.innerText = "מתחיל בטעינה...";
 
         try {
+            // טעינת מנוע ה-SQL
             const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${f}` });
+            
             const reader = new FileReader();
 
-            // עדכון אחוזים בזמן אמת
-            reader.onprogress = function(event) {
+            // פונקציית האחוזים
+            reader.onprogress = (event) => {
                 if (event.lengthComputable) {
                     const percent = Math.round((event.loaded / event.total) * 100);
-                    progressBar.style.width = percent + '%';
-                    status.innerText = `קורא קובץ מהמכשיר: ${percent}%`;
+                    requestAnimationFrame(() => {
+                        progressBar.style.width = percent + '%';
+                        status.innerText = `טעינה מהמכשיר: ${percent}%`;
+                    });
                 }
             };
 
-            reader.onload = function() {
-                status.innerText = "מעבד נתונים... (זה השלב הכי כבד)";
-                setTimeout(() => {
-                    try {
-                        db = new SQL.Database(new Uint8Array(reader.result));
-                        status.innerText = "✅ המאגר מוכן לחיפוש!";
-                        progressBar.style.backgroundColor = "#10b981"; // צבע ירוק כשסיים
-                    } catch (e) {
-                        status.innerText = "שגיאה בעיבוד ה-DB. אולי הקובץ פגום?";
-                    }
-                }, 100);
+            reader.onload = async (e) => {
+                status.innerText = "הקריאה הושלמה. מעבד נתונים... (נא להמתין)";
+                progressBar.style.width = '100%';
+                
+                // הפסקה קטנה כדי לתת ל-UI להתעדכן לפני העיבוד הכבד
+                await new Promise(r => setTimeout(r, 200));
+
+                try {
+                    const arrayBuffer = e.target.result;
+                    db = new SQL.Database(new Uint8Array(arrayBuffer));
+                    status.innerText = "✅ המאגר מוכן לשימוש!";
+                    progressBar.style.backgroundColor = "#10b981"; // הופך לירוק כשמוכן
+                } catch (err) {
+                    status.innerText = "שגיאה בעיבוד. וודא שזה קובץ SQLite תקין.";
+                    console.error(err);
+                }
             };
 
             reader.readAsArrayBuffer(file);
         } catch (e) {
-            status.innerText = "שגיאה בטעינה: " + e.message;
+            status.innerText = "שגיאה: " + e.message;
         }
     }
 
     function doSearch() {
-        if (!db) { alert("טען קודם את הקובץ"); return; }
+        if (!db) { alert("יש לטעון את הקובץ תחילה"); return; }
         const resDiv = document.getElementById('results');
         resDiv.innerHTML = "<p style='text-align:center'>מחפש...</p>";
 
@@ -158,12 +169,13 @@
         const ln = document.getElementById('inLN').value;
         const city = document.getElementById('inCity').value;
 
+        // בניית שאילתה חכמה
         let q = "SELECT * FROM people WHERE 1=1";
         if(id) q += ` AND זהות = '${id}'`;
         if(fn) q += ` AND פרטי LIKE '${fn}%'`;
         if(ln) q += ` AND משפחה LIKE '${ln}%'`;
         if(city) q += ` AND עיר LIKE '${city}%'`;
-        q += " LIMIT 50";
+        q += " LIMIT 100";
 
         try {
             const res = db.exec(q);
@@ -176,15 +188,16 @@
                 const card = document.createElement('div');
                 card.className = 'result-card';
                 card.innerHTML = `
-                    <div style="font-weight:bold; font-size:18px;">${p.פרטי} ${p.משפחה}</div>
-                    <div style="color:var(--text-dim); font-size:14px; margin-top:5px;">
-                        ת.ז: ${p.זהות} | עיר: ${p.עיר} | לידה: ${p.שנה}
+                    <div style="font-weight:bold; font-size:18px; color:white;">${p.פרטי || ''} ${p.משפחה || ''}</div>
+                    <div style="color:var(--text-dim); font-size:14px; margin-top:8px; line-height:1.5;">
+                        <b>ת.ז:</b> ${p.זהות || 'חסר'} | <b>עיר:</b> ${p.עיר || 'לא ידוע'}<br>
+                        <b>שנת לידה:</b> ${p.שנה || 'לא ידוע'}
                     </div>
                 `;
                 resDiv.appendChild(card);
             });
         } catch (e) {
-            resDiv.innerHTML = "שגיאה בחיפוש: " + e.message;
+            resDiv.innerHTML = "<p style='color:red'>שגיאה בחיפוש: " + e.message + "</p>";
         }
     }
 </script>
