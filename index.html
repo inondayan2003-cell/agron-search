@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AGRON SYSTEM - Fixed Edition</title>
+    <title>AGRON SYSTEM - Fixed</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
     <style>
         :root {
@@ -11,15 +11,13 @@
             --card: #11141b;
             --input: #1a1f26;
             --accent: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.4);
             --text: #ffffff;
             --dim: #a0aec0;
             --border: #2d3748;
-            --success: #10b981;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, system-ui, sans-serif;
             background: radial-gradient(circle at top, #1a1f26 0%, #05070a 100%);
             background-attachment: fixed;
             color: var(--text);
@@ -28,30 +26,53 @@
         }
 
         .container { width: 100%; max-width: 500px; }
-        .header h1 { text-align: center; font-weight: 800; font-size: 28px; background: linear-gradient(to bottom, #fff, #666); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
+        .header h1 { text-align: center; font-weight: 800; margin-bottom: 25px; color: #fff; }
 
-        .search-card { background: rgba(17, 20, 27, 0.8); backdrop-filter: blur(10px); padding: 25px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+        .search-card {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
 
-        .file-label { display: block; background: #1a1f26; border: 1px solid var(--border); padding: 15px; border-radius: 14px; text-align: center; cursor: pointer; font-weight: 600; margin-bottom: 15px; }
-        
-        input { width: 100%; padding: 16px; background: var(--input); border: 1px solid transparent; border-radius: 14px; color: white; font-size: 16px; margin-bottom: 12px; box-sizing: border-box; outline: none; }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        /* תיקון אזור בחירת הקובץ */
+        .file-upload-area {
+            display: block;
+            background: #1a1f26;
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+        .file-upload-area:hover { border-color: var(--accent); background: #222933; }
 
-        .search-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; border-radius: 14px; font-size: 18px; font-weight: 700; cursor: pointer; }
+        input[type="text"] {
+            width: 100%; padding: 15px; background: var(--input);
+            border: 1px solid transparent; border-radius: 12px;
+            color: white; font-size: 16px; margin-bottom: 12px;
+            box-sizing: border-box; outline: none;
+        }
+        input:focus { border-color: var(--accent); }
 
-        #progress-container { display: none; width: 100%; background: #1e293b; border-radius: 10px; height: 8px; margin: 15px 0; overflow: hidden; }
-        #progress-bar { width: 0%; height: 100%; background: var(--accent); transition: width 0.2s; }
+        .search-btn {
+            width: 100%; padding: 16px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white; border: none; border-radius: 12px;
+            font-size: 18px; font-weight: 700; cursor: pointer;
+        }
 
-        .result-card { background: var(--card); padding: 20px; border-radius: 20px; margin-top: 15px; border: 1px solid var(--border); border-right: 4px solid var(--accent); }
-        .res-name { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
-        .res-detail { font-size: 15px; color: var(--dim); line-height: 1.5; }
+        #status { text-align: center; font-size: 14px; margin: 10px 0; color: var(--accent); }
+        #progress-container { display: none; width: 100%; background: #2d3748; height: 6px; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+        #progress-bar { width: 0%; height: 100%; background: var(--accent); transition: 0.2s; }
 
-        .fam-btn { width: 100%; background: #1a1f26; border: 1px solid var(--border); color: var(--accent); padding: 12px; border-radius: 12px; margin-top: 15px; font-weight: 600; cursor: pointer; }
-        
-        .mini-card { background: #0d1117; padding: 15px; border-radius: 14px; margin-top: 10px; border-right: 4px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
-        .rel-label { font-size: 11px; color: var(--accent); font-weight: bold; text-transform: uppercase; }
-        .mini-name { font-size: 16px; font-weight: bold; }
-        .mini-detail { font-size: 12px; color: var(--dim); }
+        .result-card { background: #161b22; padding: 20px; border-radius: 18px; margin-top: 15px; border: 1px solid var(--border); }
+        .res-name { font-size: 20px; font-weight: bold; }
+        .fam-box { margin-top: 10px; }
+        .mini-card { background: #0d1117; padding: 12px; border-radius: 10px; margin-top: 5px; border-right: 3px solid var(--accent); }
     </style>
 </head>
 <body>
@@ -60,12 +81,12 @@
     <div class="header"><h1>AGRON PERFECT</h1></div>
 
     <div class="search-card">
-        <label class="file-label">
-            📁 לחץ לבחירת קובץ agron_perfect.db
+        <label for="dbFile" class="file-upload-area" id="dropZone">
+            <span id="labelTxt">📁 לחץ כאן לבחירת קובץ ה-DB</span>
             <input type="file" id="dbFile" accept=".db" style="display:none" onchange="loadDB(this)">
         </label>
 
-        <div id="status" style="text-align:center; margin-bottom:10px; font-size:14px;">ממתין לטעינת מאגר...</div>
+        <div id="status">ממתין לקובץ...</div>
         <div id="progress-container"><div id="progress-bar"></div></div>
 
         <input type="text" id="inID" placeholder="מספר זהות">
@@ -83,45 +104,48 @@
     let db = null;
 
     async function loadDB(input) {
-        if (!input.files[0]) return;
         const file = input.files[0];
+        if (!file) return;
+
         const status = document.getElementById('status');
         const progressBar = document.getElementById('progress-bar');
         const progressContainer = document.getElementById('progress-container');
-        
+        const labelTxt = document.getElementById('labelTxt');
+
         progressContainer.style.display = 'block';
-        status.innerText = "מתחיל בטעינה...";
+        status.innerText = "טוען קובץ...";
+        labelTxt.innerText = "📄 " + file.name;
 
         try {
             const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${f}` });
             const reader = new FileReader();
 
-            reader.onprogress = (event) => {
-                if (event.lengthComputable) {
-                    const percent = Math.round((event.loaded / event.total) * 100);
-                    progressBar.style.width = percent + '%';
-                    status.innerText = `טעינה: ${percent}%`;
+            reader.onprogress = (e) => {
+                if (e.lengthComputable) {
+                    const p = Math.round((e.loaded / e.total) * 100);
+                    progressBar.style.width = p + '%';
+                    status.innerText = `טעינה: ${p}%`;
                 }
             };
 
             reader.onload = async (e) => {
-                status.innerText = "מעבד נתונים...";
                 try {
-                    db = new SQL.Database(new Uint8Array(e.target.result));
-                    status.innerText = "✅ המאגר מוכן!";
-                    progressBar.style.backgroundColor = "var(--success)";
+                    const uInt8Array = new Uint8Array(e.target.result);
+                    db = new SQL.Database(uInt8Array);
+                    status.innerText = "✅ המאגר נטען בהצלחה!";
+                    status.style.color = "#10b981";
                 } catch (err) {
-                    status.innerText = "שגיאה בעיבוד הקובץ.";
+                    status.innerText = "❌ שגיאה: הקובץ אינו פורמט SQLite תקין.";
                 }
             };
             reader.readAsArrayBuffer(file);
-        } catch (e) {
-            status.innerText = "שגיאה: " + e.message;
+        } catch (err) {
+            status.innerText = "שגיאה בטעינה: " + err.message;
         }
     }
 
     function doSearch() {
-        if (!db) { alert("יש לטעון קובץ תחילה"); return; }
+        if (!db) { alert("קודם תטען את הקובץ!"); return; }
         const resDiv = document.getElementById('results');
         resDiv.innerHTML = "<p style='text-align:center'>מחפש...</p>";
 
@@ -140,89 +164,24 @@
         try {
             const res = db.exec(q);
             resDiv.innerHTML = "";
-            if(!res[0]) { resDiv.innerHTML = "<p style='text-align:center'>לא נמצאו תוצאות</p>"; return; }
+            if(!res[0]) { resDiv.innerHTML = "<p style='text-align:center'>אין תוצאות</p>"; return; }
 
             res[0].values.forEach(row => {
                 let p = {};
                 res[0].columns.forEach((c, i) => p[c] = row[i]);
-                
                 const card = document.createElement('div');
                 card.className = 'result-card';
                 card.innerHTML = `
                     <div class="res-name">${p.פרטי} ${p.משפחה}</div>
-                    <div class="res-detail">
-                        <b>ת.ז:</b> ${p.זהות} | <b>עיר:</b> ${p.עיר}<br>
-                        <b>תאריך לידה:</b> ${p.תא_לידה}
+                    <div style="color:var(--dim); font-size:14px; margin-top:5px;">
+                        🆔 ${p.זהות} | 📍 ${p.עיר} | 📅 ${p.תא_לידה}
                     </div>
-                    <button class="fam-btn" onclick="showFamily('${p.זהות}', '${p.מז_אב}', '${p.מז_אם}', this)">הצג משפחה ▼</button>
-                    <div class="fam-box" id="box-${p.זהות}" style="display:none"></div>
                 `;
                 resDiv.appendChild(card);
             });
         } catch (e) {
             resDiv.innerHTML = "שגיאה בחיפוש.";
         }
-    }
-
-    // פונקציית עזר לעיצוב כרטיסייה קטנה של בן משפחה
-    function createMiniCard(p, rel) {
-        const icon = rel === 'אבא' ? '👨' : rel === 'אמא' ? '👩' : '🧒';
-        return `
-            <div class="mini-card">
-                <div>
-                    <div class="rel-label">${rel}</div>
-                    <div class="mini-name">${p.פרטי} ${p.משפחה}</div>
-                    <div class="mini-detail">🆔 ${p.זהות} | 📍 ${p.עיר}</div>
-                </div>
-                <div style="font-size: 20px;">${icon}</div>
-            </div>`;
-    }
-
-    function showFamily(myId, dadId, momId, btn) {
-        const box = document.getElementById(`box-${myId}`);
-        
-        if (box.style.display === "block") {
-            box.style.display = "none";
-            btn.innerText = "הצג משפחה ▼";
-            return;
-        }
-
-        box.innerHTML = "<p style='text-align:center; font-size:12px; padding:10px;'>מחפש קרובים...</p>";
-        box.style.display = "block";
-        btn.innerText = "סגור משפחה ▲";
-
-        let familyHtml = "";
-
-        // 1. הורים
-        const parents = db.exec(`SELECT * FROM people WHERE זהות='${dadId}' OR זהות='${momId}'`);
-        if (parents[0]) {
-            parents[0].values.forEach(row => {
-                let p = {}; parents[0].columns.forEach((c, i) => p[c] = row[i]);
-                familyHtml += createMiniCard(p, (p.זהות === dadId) ? "אבא" : "אמא");
-            });
-        }
-
-        // 2. אחים (לפי אבא)
-        if (dadId && dadId !== '0') {
-            const sibs = db.exec(`SELECT * FROM people WHERE מז_אב='${dadId}' AND זהות!='${myId}' LIMIT 10`);
-            if (sibs[0]) {
-                sibs[0].values.forEach(row => {
-                    let p = {}; sibs[0].columns.forEach((c, i) => p[c] = row[i]);
-                    familyHtml += createMiniCard(p, "אח / אחות");
-                });
-            }
-        }
-
-        // 3. ילדים
-        const kids = db.exec(`SELECT * FROM people WHERE מז_אב='${myId}' OR מז_אם='${myId}'`);
-        if (kids[0]) {
-            kids[0].values.forEach(row => {
-                let p = {}; kids[0].columns.forEach((c, i) => p[c] = row[i]);
-                familyHtml += createMiniCard(p, "ילד / ה");
-            });
-        }
-
-        box.innerHTML = familyHtml || "<p style='text-align:center; color:var(--dim); font-size:12px; padding:10px;'>לא נמצאו קרובים במאגר</p>";
     }
 </script>
 </body>
